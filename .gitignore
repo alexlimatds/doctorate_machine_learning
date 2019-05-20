@@ -1,3 +1,4 @@
 *.png
 *.pdf
-
+agglomerative-*.txt
+kmeans-*.txt
