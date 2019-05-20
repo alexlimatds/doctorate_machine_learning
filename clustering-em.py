@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_samples, davies_bouldin_score, adjusted_rand_score
 
 df = pd.read_csv('/home/alexandre/Documentos/Alexandre/doutorado/AM/audit_data/trial.csv')
@@ -27,12 +27,13 @@ def calcSilhouettes(preds, k):
     silhouettes[k][c_i].append(s_mean)
 
 def printSilhouettes():
-  log_file = open('agglomerative-silhouettes.txt', 'w+')
+  log_file = open('em-silhouettes.txt', 'w+')
   for k in silhouettes.keys():
     log_file.write('k={}\n'.format(k))
-    log_file.write('cluster,silhouette\n')
+    log_file.write('cluster,silhouette_1,silhouette_2,silhouette_3,silhouette_4,silhouette_5\n')
     for c in range(len(silhouettes[k])):
-      log_file.write('{},{}\n'.format(c, silhouettes[k][c][0]))
+      v = ','.join(map(str, silhouettes[k][c]))
+      log_file.write('{},{}\n'.format(c, v))
   log_file.close()
 
 dbs = {}
@@ -41,10 +42,11 @@ def calcDBs(preds, k):
   dbs[k].append(db)
 
 def printDBs():
-  log_file = open('agglomerative-DBs.txt', 'w+')
-  log_file.write('k,DB\n')
+  log_file = open('em-DBs.txt', 'w+')
+  log_file.write('k, DB_1, DB_2, DB_3, DB_4, DB_5\n')
   for k in dbs.keys():
-    log_file.write('{},{}\n'.format(k, dbs[k][0]))
+    v = ','.join(map(str, dbs[k]))
+    log_file.write('{},{}\n'.format(k, v))
   log_file.close()
 
 crs = {}
@@ -53,24 +55,26 @@ def calcCRs(preds, k):
   crs[k].append(cr)
 
 def printCRs():
-  log_file = open('agglomerative-CRs.txt', 'w+')
-  log_file.write('k,CR\n')
+  log_file = open('em-CRs.txt', 'w+')
+  log_file.write('k, CR_1, CR_2, CR_3, CR_4, CR_5\n')
   for k in crs.keys():
-    log_file.write('{},{}\n'.format(k, crs[k][0]))
+    v = ','.join(map(str, crs[k]))
+    log_file.write('{},{}\n'.format(k, v))
   log_file.close()
   
-#The number of clusters will vary from 2 to 20
+#The number of clusters will vary from 2 to 20. For each one cluster number, perform 5 experiments
 for k in range(2, 21):
   silhouettes[k] = []
   dbs[k] = []
   crs[k] = []
   for i in range(0, k):
     silhouettes[k].insert(i, [])
-  algorithm = AgglomerativeClustering(n_clusters=k, linkage='average')
-  predictions = algorithm.fit_predict(df)
-  calcSilhouettes(predictions, k)
-  calcDBs(predictions, k)
-  calcCRs(predictions, k)
+  for i in range(1, 6):
+    algorithm = GaussianMixture(n_components=k, init_params='random')
+    predictions = algorithm.fit_predict(df)
+    calcSilhouettes(predictions, k)
+    calcDBs(predictions, k)
+    calcCRs(predictions, k)
 
 printSilhouettes()
 printDBs()

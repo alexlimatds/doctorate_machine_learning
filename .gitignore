@@ -2,3 +2,5 @@
 *.pdf
 agglomerative-*.txt
 kmeans-*.txt
+em-*.txt
+
