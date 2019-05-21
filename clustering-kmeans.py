@@ -43,7 +43,7 @@ def calcDBs(preds, k):
 
 def printDBs():
   log_file = open('kmeans-DBs.txt', 'w+')
-  log_file.write('k, DB_1, DB_2, DB_3, DB_4, DB_5\n')
+  log_file.write('k,DB_1,DB_2,DB_3,DB_4,DB_5\n')
   for k in dbs.keys():
     v = ','.join(map(str, dbs[k]))
     log_file.write('{},{}\n'.format(k, v))
@@ -56,7 +56,7 @@ def calcCRs(preds, k):
 
 def printCRs():
   log_file = open('kmeans-CRs.txt', 'w+')
-  log_file.write('k, CR_1, CR_2, CR_3, CR_4, CR_5\n')
+  log_file.write('k,CR_1,CR_2,CR_3,CR_4,CR_5\n')
   for k in crs.keys():
     v = ','.join(map(str, crs[k]))
     log_file.write('{},{}\n'.format(k, v))
