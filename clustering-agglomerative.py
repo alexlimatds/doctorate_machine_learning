@@ -21,18 +21,20 @@ def calcSilhouettes(preds, k):
   # Compute the silhouette scores for each instance
   sample_silhouette_values = silhouette_samples(df, preds)
   #iterate over clusters numbers
-  for c_i in np.unique(preds):
+  clusters = np.unique(preds)
+  avg = 0
+  for c_i in clusters:
     #getting silhouette of ith cluster
-    s_mean = sample_silhouette_values[preds == c_i].mean()
-    silhouettes[k][c_i].append(s_mean)
+    avg += sample_silhouette_values[preds == c_i].mean()
+  avg = avg / clusters.size
+  silhouettes[k].append(avg)
 
 def printSilhouettes():
   log_file = open('agglomerative-silhouettes.txt', 'w+')
+  log_file.write('k,silhouette_1\n')
   for k in silhouettes.keys():
-    log_file.write('k={}\n'.format(k))
-    log_file.write('cluster,silhouette\n')
-    for c in range(len(silhouettes[k])):
-      log_file.write('{},{}\n'.format(c, silhouettes[k][c][0]))
+    v = ','.join(map(str, silhouettes[k]))
+    log_file.write('{},{}\n'.format(k, v))
   log_file.close()
 
 dbs = {}
@@ -42,7 +44,7 @@ def calcDBs(preds, k):
 
 def printDBs():
   log_file = open('agglomerative-DBs.txt', 'w+')
-  log_file.write('k,DB\n')
+  log_file.write('k,DB_1\n')
   for k in dbs.keys():
     log_file.write('{},{}\n'.format(k, dbs[k][0]))
   log_file.close()
@@ -54,7 +56,7 @@ def calcCRs(preds, k):
 
 def printCRs():
   log_file = open('agglomerative-CRs.txt', 'w+')
-  log_file.write('k,CR\n')
+  log_file.write('k,CR_1\n')
   for k in crs.keys():
     log_file.write('{},{}\n'.format(k, crs[k][0]))
   log_file.close()
@@ -64,8 +66,6 @@ for k in range(2, 21):
   silhouettes[k] = []
   dbs[k] = []
   crs[k] = []
-  for i in range(0, k):
-    silhouettes[k].insert(i, [])
   algorithm = AgglomerativeClustering(n_clusters=k, linkage='average')
   predictions = algorithm.fit_predict(df)
   calcSilhouettes(predictions, k)

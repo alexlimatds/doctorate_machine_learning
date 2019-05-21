@@ -21,19 +21,20 @@ def calcSilhouettes(preds, k):
   # Compute the silhouette scores for each instance
   sample_silhouette_values = silhouette_samples(df, preds)
   #iterate over clusters numbers
-  for c_i in np.unique(preds):
+  clusters = np.unique(preds)
+  avg = 0
+  for c_i in clusters:
     #getting silhouette of ith cluster
-    s_mean = sample_silhouette_values[preds == c_i].mean()
-    silhouettes[k][c_i].append(s_mean)
+    avg += sample_silhouette_values[preds == c_i].mean()
+  avg = avg / clusters.size
+  silhouettes[k].append(avg)
 
 def printSilhouettes():
   log_file = open('em-silhouettes.txt', 'w+')
+  log_file.write('k,silhouette_1,silhouette_2,silhouette_3,silhouette_4,silhouette_5\n')
   for k in silhouettes.keys():
-    log_file.write('k={}\n'.format(k))
-    log_file.write('cluster,silhouette_1,silhouette_2,silhouette_3,silhouette_4,silhouette_5\n')
-    for c in range(len(silhouettes[k])):
-      v = ','.join(map(str, silhouettes[k][c]))
-      log_file.write('{},{}\n'.format(c, v))
+    v = ','.join(map(str, silhouettes[k]))
+    log_file.write('{},{}\n'.format(k, v))
   log_file.close()
 
 dbs = {}
@@ -67,8 +68,6 @@ for k in range(2, 21):
   silhouettes[k] = []
   dbs[k] = []
   crs[k] = []
-  for i in range(0, k):
-    silhouettes[k].insert(i, [])
   for i in range(1, 6):
     algorithm = GaussianMixture(n_components=k, init_params='random')
     predictions = algorithm.fit_predict(df)
