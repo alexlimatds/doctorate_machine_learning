@@ -64,7 +64,7 @@ def printCRs():
   log_file.close()
   
 #The number of clusters will vary from 2 to 20. For each one cluster number, perform 5 experiments
-for k in range(2, 5):
+for k in range(2, 21):
   silhouettes[k] = []
   dbs[k] = []
   crs[k] = []
