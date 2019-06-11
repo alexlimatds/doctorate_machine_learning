@@ -25,11 +25,32 @@ featureNames.remove('Risk')
 x = df[featureNames]
 y = df.Risk
 
+def diversity(estimator, X, y):
+	N = len(y.index)
+	classifiers = estimator.clfs_
+	L = len(classifiers)
+	sum = 0
+	out = []
+	y2 = y.to_list()
+	for c in classifiers:
+		out.append(c.predict(X))
+	for i in range(0, N):	
+		l = 0
+		for o in out:
+			if o[i] == y2[i]:
+				l = l + 1
+		sum = sum + (1 / (L - (L/ 2)) * min(l, L - l))
+	E = sum / N
+	return E;
+
 def report(experimentName, scores):
-	s = pd.Series(scores)
+	score = pd.Series(scores['score'])
+	diversity = pd.Series(scores['diversity'])
 	print(experimentName)
-	print('Mean on test: %0.2f' % (s.mean()))
-	print('Standard deviation on test: %0.3f' % (s.std()))
+	print('Mean score on test: %0.2f' % (score.mean()))
+	print('Standard deviation score on test: %0.3f' % (score.std()))
+	print('Mean diversity on test: %0.4f' % (diversity.mean()))
+	print('Standard deviation diversity on test: %0.4f' % (diversity.std()))
 
 featuresControl = 1
 def getRandomCols():
@@ -56,11 +77,14 @@ def runExperiment(bases, experimentName):
 			for b in bases:
 				pipe = make_pipeline(ColumnSelector(cols=getRandomCols()), b)
 				base_classifiers.append(pipe)
-		test_scores = []
+#		test_scores = []
+		test_scores = {'score':[], 'diversity':[]}
 		for j in range(10):
 			ensemble = StackingClassifier(classifiers=base_classifiers, meta_classifier=meta_classifier)
-			cv_scores = cross_validate(ensemble, input, y, scoring=metric, cv=KFold(n_splits=10))
-			test_scores.append(cv_scores['test_score'].mean())
+			cv_scores = cross_validate(ensemble, input, y, scoring={'score':metric, 'diversity':diversity}, cv=KFold(n_splits=10))
+#			test_scores.append(cv_scores['test_score'].mean())
+			test_scores['score'].append(cv_scores['test_score'].mean())
+			test_scores['diversity'].append(cv_scores['test_diversity'].mean())
 		report(experiment, test_scores)
 
 bases = [KNeighborsClassifier(n_neighbors=1), 

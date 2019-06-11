@@ -24,11 +24,40 @@ featureNames.remove('Risk')
 x = df[featureNames]
 y = df.Risk
 
+def diversity(estimator, X, y):
+	N = len(y.index)
+	classifiers = estimator.clfs_
+	L = len(classifiers)
+	sum = 0
+	out = []
+	y2 = y.to_list()
+	for c in classifiers:
+		out.append(c.predict(X))
+	for i in range(0, N):	
+		l = 0
+		for o in out:
+			if o[i] == y2[i]:
+				l = l + 1
+		sum = sum + (1 / (L - (L/ 2)) * min(l, L - l))
+	E = sum / N
+	return E;
+
+def report(experimentName, scores):
+	score = pd.Series(scores['score'])
+	diversity = pd.Series(scores['diversity'])
+	print(experimentName)
+	print('Mean score on test: %0.2f' % (score.mean()))
+	print('Standard deviation score on test: %0.3f' % (score.std()))
+	print('Mean diversity on test: %0.4f' % (diversity.mean()))
+	print('Standard deviation diversity on test: %0.4f' % (diversity.std()))
+
+"""
 def report(experimentName, scores):
 	s = pd.Series(scores)
 	print(experimentName)
 	print('Mean on test: %0.2f' % (s.mean()))
 	print('Standard deviation on test: %0.3f' % (s.std()))
+"""
 
 def runExperiment(base_classifiers, experimentName):
 	if len(base_classifiers) != 5:
@@ -41,11 +70,15 @@ def runExperiment(base_classifiers, experimentName):
 		for j in range(1, i // len(base_classifiers) + 1):
 			classifiers.extend(base_classifiers)
 		experiment = '\n*** Stacking - {} - {} base classifiers ***'.format(experimentName, len(classifiers))
-		test_scores = []
+#		test_scores = []
+		test_scores = {'score':[], 'diversity':[]}
 		for j in range(10):
 			ensemble = StackingClassifier(classifiers=base_classifiers, meta_classifier=meta_classifier)
-			cv_scores = cross_validate(ensemble, input, y, scoring=metric, cv=KFold(n_splits=10))
-			test_scores.append(cv_scores['test_score'].mean())
+#			cv_scores = cross_validate(ensemble, input, y, scoring=metric, cv=KFold(n_splits=10))
+			cv_scores = cross_validate(ensemble, input, y, scoring={'score':metric, 'diversity':diversity}, cv=KFold(n_splits=10))
+#			test_scores.append(cv_scores['test_score'].mean())
+			test_scores['score'].append(cv_scores['test_score'].mean())
+			test_scores['diversity'].append(cv_scores['test_diversity'].mean())
 		report(experiment, test_scores)
 
 """
@@ -56,14 +89,14 @@ classifiers = [tree.DecisionTreeClassifier(),
 	tree.DecisionTreeClassifier(splitter='random', max_features=0.7)]
 runExperiment(classifiers, "Decision Tree")
 """
-"""
+
 classifiers = [KNeighborsClassifier(n_neighbors=1), 
 	KNeighborsClassifier(n_neighbors=3), 
 	KNeighborsClassifier(n_neighbors=10), 
 	KNeighborsClassifier(n_neighbors=5, weights='distance'), 
 	KNeighborsClassifier(n_neighbors=15, weights='distance')]
 runExperiment(classifiers, "KNN")
-"""
+
 """
 classifiers =[make_pipeline(ColumnSelector(cols=(0, 1, 2)), GaussianNB()), 
 	make_pipeline(ColumnSelector(cols=(2, 3, 4)), GaussianNB()), 
@@ -72,10 +105,11 @@ classifiers =[make_pipeline(ColumnSelector(cols=(0, 1, 2)), GaussianNB()),
 	make_pipeline(ColumnSelector(cols=(0, 3, 5, 7)), GaussianNB())]
 runExperiment(classifiers, "Naive Bayes")
 """
+"""
 classifiers = [MLPClassifier(hidden_layer_sizes=(10), learning_rate_init=0.4, max_iter=1500, activation='tanh', solver='sgd', momentum=0.8), 
 	MLPClassifier(hidden_layer_sizes=(12), learning_rate_init=0.65, max_iter=1000, activation='tanh', solver='sgd', momentum=0.7), 
 	MLPClassifier(hidden_layer_sizes=([5, 5]), learning_rate_init=0.8, max_iter=500, activation='tanh', solver='sgd', momentum=0.4), 
 	MLPClassifier(hidden_layer_sizes=([3, 3, 3]), learning_rate_init=0.6, max_iter=200, activation='tanh', solver='sgd', momentum=0.3), 
 	MLPClassifier(hidden_layer_sizes=(5), learning_rate_init=0.7, max_iter=200, activation='tanh', solver='sgd', momentum=0.9)]
 runExperiment(classifiers, "MLP")
-
+"""
