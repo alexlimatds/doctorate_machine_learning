@@ -33,30 +33,37 @@ neuronios = 4
 alpha = 0.04 #taxa de aprendizagem
 
 log_file = open('mlp_final_out.txt', 'w+')
+scores_file = open('classification_scores-mlp2.txt', 'w+')
 
-def report(scores):
-	msg = 'Mean accuracy on train: %0.2f' % (scores['train_score'].mean())
+def report(experiment, scores):
+	msg = experiment
+	msg += '\nMean accuracy on train: %0.2f' % (scores['train_score'].mean())
 	msg += '\nStandard deviation accuracy on train: %0.2f' % (scores['train_score'].std())
 	msg += '\nMean accuracy on test: %0.2f' % (scores['test_score'].mean())
 	msg += '\nStandard deviation accuracy on test: %0.2f' % (scores['test_score'].std())
 	msg += '\nRun epochs on train: {}'.format(scores['train_epochs'])
 	print(msg)
 	log_file.write(msg + '\n')
+	#writing test scores	
+	scores_file.write('{} score per fold\n'.format(experiment))
+	for s in scores['test_score']:
+		scores_file.write('{}\n'.format(s))
 
 def getRanEpochs(estimator, X, y):
 	return estimator.n_iter_
 
 def exp(i, n, a):
 	experimento = '\n*** MLP - iteracoes={}; neuronios={}; alpha={} ***'.format(i, n, a)
-	log_file.write(experimento + '\n')
-	print(experimento)
+	#log_file.write(experimento + '\n')
+	#print(experimento)
 	mlp = MLPClassifier(hidden_layer_sizes=(n), learning_rate_init=a, max_iter=i, n_iter_no_change=i, activation='tanh', solver='sgd', momentum=0.8)
 	#treinamento
 	cv_scores = cross_validate(mlp, x_n, y, scoring={'score':'accuracy', 'epochs':getRanEpochs}, cv=KFold(n_splits=10), return_train_score=True)
 	#resultados
-	report(cv_scores)
+	report(experimento, cv_scores)
 
 for i in range(5):
 	exp(iteracoes, neuronios, alpha)
 
 log_file.close()
+scores_file.close()

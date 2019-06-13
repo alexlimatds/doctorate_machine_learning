@@ -1,35 +1,35 @@
 
 *** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
-Mean accuracy on train: 0.91
-Standard deviation accuracy on train: 0.02
+Mean accuracy on train: 0.92
+Standard deviation accuracy on train: 0.01
+Mean accuracy on test: 0.92
+Standard deviation accuracy on test: 0.05
+Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]
+
+*** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
+Mean accuracy on train: 0.92
+Standard deviation accuracy on train: 0.01
 Mean accuracy on test: 0.93
-Standard deviation accuracy on test: 0.04
+Standard deviation accuracy on test: 0.06
 Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]
 
 *** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
-Mean accuracy on train: 0.91
-Standard deviation accuracy on train: 0.03
-Mean accuracy on test: 0.90
-Standard deviation accuracy on test: 0.05
+Mean accuracy on train: 0.89
+Standard deviation accuracy on train: 0.07
+Mean accuracy on test: 0.87
+Standard deviation accuracy on test: 0.14
 Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]
 
 *** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
-Mean accuracy on train: 0.92
-Standard deviation accuracy on train: 0.01
-Mean accuracy on test: 0.92
-Standard deviation accuracy on test: 0.05
-Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]
-
-*** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
-Mean accuracy on train: 0.92
-Standard deviation accuracy on train: 0.01
-Mean accuracy on test: 0.92
-Standard deviation accuracy on test: 0.05
-Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]
-
-*** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
-Mean accuracy on train: 0.91
+Mean accuracy on train: 0.93
 Standard deviation accuracy on train: 0.02
-Mean accuracy on test: 0.90
-Standard deviation accuracy on test: 0.07
+Mean accuracy on test: 0.92
+Standard deviation accuracy on test: 0.06
+Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]
+
+*** MLP - iteracoes=1500; neuronios=4; alpha=0.04 ***
+Mean accuracy on train: 0.91
+Standard deviation accuracy on train: 0.01
+Mean accuracy on test: 0.91
+Standard deviation accuracy on test: 0.08
 Run epochs on train: [1500 1500 1500 1500 1500 1500 1500 1500 1500 1500]

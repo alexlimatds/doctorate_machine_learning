@@ -8,7 +8,7 @@ from sklearn.naive_bayes import GaussianNB
 
 df = pd.read_csv('/home/alexandre/Documentos/Alexandre/doutorado/AM/audit_data/trial.csv')
 
-#Duas classes: 0 (No risk - baixo risco de fraude) e 1 (Risk - alto risco de fraude)
+#Two classes: 0 (No risk) e 1 (Risk)
 #471 instâncias da classe 0
 #305 instâncias da classe 1
 
@@ -33,18 +33,25 @@ y = df.Risk
 #matriz de correlação
 #sns.heatmap(x.corr(), annot=True).figure.savefig('corr.png')
 
+log_file = open('classification_scores-naive.txt', 'w+')
+
 def report(scores, experimentName):
 	print(experimentName)
 	print('Mean accuracy on train: %0.2f' % (scores['train_score'].mean()))
 	print('Standard deviation accuracy on train: %0.2f' % (scores['train_score'].std()))
 	print('Mean accuracy on test: %0.2f' % (scores['test_score'].mean()))
 	print('Standard deviation accuracy on test: %0.2f' % (scores['test_score'].std()))
+	#writing test scores
+	log_file.write('{} score per fold\n'.format(experimentName))
+	for s in scores['test_score']:
+		log_file.write('{}\n'.format(s))
 
 naive = GaussianNB()
 experimento = '*** NAIVE BAYES - No Scaler ***'
 x_n = x
-#treinamento
+#trainning
 cv_scores = cross_validate(naive, x, y, scoring='accuracy', cv=KFold(n_splits=10), return_train_score=True)
-#resultados
+#results
 report(cv_scores, experimento)
 
+log_file.close()
