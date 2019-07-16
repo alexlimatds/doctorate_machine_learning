@@ -27,6 +27,8 @@ y = df.Risk
 
 featuresControl = 1
 
+log_file = open('stacking_scores.txt', 'w+')
+
 def report(experimentName, scores):
 	score = pd.Series(scores['score'])
 	diversity = pd.Series(scores['diversity'])
@@ -35,6 +37,10 @@ def report(experimentName, scores):
 	print('Standard deviation score on test: %0.3f' % (score.std()))
 	print('Mean diversity on test: %0.4f' % (diversity.mean()))
 	print('Standard deviation diversity on test: %0.4f' % (diversity.std()))
+	#writing test scores
+	log_file.write('{}  - mean score per trainning/test session \n'.format(experimentName))
+	for s in scores['score']:
+		log_file.write('{}\n'.format(s))
 
 def generateMLP():
 	return MLPClassifier(hidden_layer_sizes=(random.randint(5, 15)), learning_rate_init=random.random(), max_iter=random.randint(100, 2000), activation='tanh', solver='sgd', momentum=random.random())
@@ -116,12 +122,14 @@ def runExperiment(base_classifiers, experimentName, featureSelection=False):
 			test_scores['diversity'].append(cv_scores['test_diversity'].mean())
 		report(experiment, test_scores)
 
-#runExperiment(['DT', 'NB'], "Decision Tree / Naive Bayes")
+runExperiment(['DT', 'NB'], "Decision Tree / Naive Bayes")
 
-#runExperiment(['DT', 'MLP'], "Decision Tree / MLP")
+runExperiment(['DT', 'MLP'], "Decision Tree / MLP")
 
-#runExperiment(['NB', 'MLP'], "Naive Bayes / MLP")
+runExperiment(['NB', 'MLP'], "Naive Bayes / MLP")
 
-#runExperiment(['DT', 'NB', 'MLP'], "Decision Tree / Naive Bayes / MLP")
+runExperiment(['DT', 'NB', 'MLP'], "Decision Tree / Naive Bayes / MLP")
 
 runExperiment(['MLP', 'DT', 'NB'], "Decision Tree / Naive Bayes / MLP / Feature selection", featureSelection=True)
+
+log_file.close()
